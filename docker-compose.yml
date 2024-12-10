@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  superphos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: superphos-web
+    ports:
+      - "8967:8967" # Map the host's port 8967 to the container's port 8967
+    environment:
+      FLASK_APP: "main.py" # Set environment variable for the Flask app
+      FLASK_ENV: "development" # Optional: Set Flask environment
+    volumes:
+      - ./data/superphos:/data/superphos # Map project directory to the container
+    networks:
+      - superphos
+    stdin_open: true # Keep the container open for debugging
+    tty: true
+
+networks:
+  superphos:
+    driver: bridge
+

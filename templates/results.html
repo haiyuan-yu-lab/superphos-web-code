@@ -1,0 +1,996 @@
+<doctype html>
+  <head>
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Protein Phosphorylation Sites Database</title>
+			<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}", type="text/css">
+			<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+      
+  </head>
+  <body>
+		<div class="topnav">
+			<a class="navbar-brand" href="/">
+				<div class="logo-image">
+				  <img src="/static/images/superphoslogo.svg">
+				</div>
+			</a>
+				<a class="active" href="/" method="get">Home</a>
+				<a href="download" method="get">Download</a>
+				<a href="#about">About</a>
+		</div>
+		<h2>SUPERPHOS: Phosphorylation Site Database</h2>
+		<div class="container">
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<ul class=flashes>
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+					</ul>
+					{% endif %}
+				{% endwith %}
+				
+				{% from "_formhelpers.html" import render_field %}
+				<form class="form-inline" id="search_box" role="form" method="post">
+					<div class="search-field">
+						<input type="text" name="search" class="round" placeholder="Enter Uniprot ID or Gene Name">
+					  </div>
+					  <div class="row">
+					  
+					  <div class="form-group col-sm-4 col-sm-offset-4">
+						<!--<select name="database" id="database" class="round-select">
+						  <option value="yeast">Yeast</option>
+						</select>-->
+						  {{ render_field(form.select) }}
+					  </div>
+					  <div class="search-button">
+						<button type="submit" value=Search class="round" style="background-color: #333;color: white;">Search</button>
+					  </div>
+					</div>
+				  </form>
+		<div class="legendimage">
+			<img src="/static/images/legend_full.png" alt="legend" width="80" height="150" class="center">
+		</div>
+          <div class="TT_content">
+    
+              <span class="message"></span>
+							<span class="error"></span>
+					
+					<script type="text/javascript" src="/../static/js/jquery.min.js"></script>
+					<script type="text/javascript" src="/../static/js/bootstrap.min.js"></script>
+					<script src="/../static/js/queue.v1.min.js"></script>
+		  <script src="/../static/js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
+		    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+			<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143701649-1"></script>
+
+			<script>
+
+			window.dataLayer = window.dataLayer || [];
+
+			function gtag(){dataLayer.push(arguments);}
+
+			gtag('js', new Date());
+
+			
+
+			gtag('config', 'UA-143701649-1');
+
+			</script>
+          <style>
+			.logo-image{
+  			width: 46px;
+  			height: 46px;
+  			border-radius: 10%;
+  			overflow: hidden;
+  			margin-top: -16px;/**/
+			}
+
+			input[type=text] {
+			width: 600px;
+			-webkit-transition: width 0.4s ease-in-out;
+			transition: width 0.4s ease-in-out;
+			}
+
+			.round {
+				width: 100%;
+				border-radius: 15px;
+				border: 1px #000 solid;
+				padding: 5px 5px 5px 25px;
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 5;
+			}
+
+			.search-field {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			position: relative;
+			width: 50%;
+			height: 40px;
+			}
+
+			.search-button {
+			display: block;
+			margin-left: 650px;
+			margin-right: auto;
+			margin-bottom: 0.2px;
+			position: relative;
+			width: 20%;
+			height: 120px;
+			}
+
+			.search-select {
+			display: block;
+			margin-left: 250px;
+			margin-right: auto;
+			margin-bottom: 0.2px;
+			position: relative;
+			width: 20%;
+			height: 120px;
+			}
+
+			.round-select {
+				width: 50%;
+				border-radius: 15px;
+				border: 1px #000 solid;
+				padding: 5px 5px 5px 25px;
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 5;
+			}
+	
+			footer {
+			position:relative;
+			margin-top: -150px; /* negative value of footer height */
+			height: 150px;
+			clear:both;
+			bottom:0;/**/
+			text-align: center;
+			padding: 4px;
+			width: 100%;
+			background-color: #333;
+			color: white;
+			}
+			.topnav {
+			overflow: hidden;
+			background-color: #333;
+			}
+
+			.topnav a {
+			float: left;
+			color: #f2f2f2;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			font-size: 17px;
+			/*display:inline-block;*/
+			}
+
+			.topnav a:hover {
+			background-color: #ddd;
+			color: black;
+			}
+
+			.topnav a.active {
+			background-color: #FF8C00;
+			color: white;
+			}
+
+			.center {
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				width: 50%;
+			}
+          .axis text {
+            font: 10px sans-serif;
+          }
+          
+          .axis path,
+          .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+           } 
+          
+          
+          
+          #filterDIV {
+            margin-top: 60px;
+            height: 100%px;
+          }
+          
+          #filterDIV .form-control {
+            width: 45px;
+            padding: none;
+            margin-left: 20px;
+          }
+          
+          #filterDIV .checkbox-inline {
+            height: 36px;
+            margin-top: 8px;
+          }
+          
+          #inlineCheckbox1, #inlineCheckbox2, #inlineCheckbox3{
+            margin-top: 0px;	
+          }
+          
+          .form-group label{
+            display: inline-block;
+          }
+					
+					/* Style the button that is used to open and close the collapsible content 
+					.collapsible {
+  					background-color: #eee;
+  					color: #444;
+  					cursor: pointer;
+  					padding: 18px;
+  					width: 100%;
+  					border: none;
+  					text-align: left;
+  					outline: none;
+  					font-size: 15px;
+					}*/
+
+					/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+					.active, .collapsible:hover {
+  					background-color: #ccc;
+					}
+
+          /*.content {
+  					padding: 0 18px;
+  					background-color: white;
+  					max-height: 0;
+  					overflow: hidden;
+  					transition: max-height 0.2s ease-out;
+					}*/
+          </style>
+          
+          
+          <br>
+			 
+      <div id="chart">
+      <script type=text/javascript>
+
+      var svg;
+	  var prot_name = '{{ name }}';
+      
+	  draw(prot_name, JSON.parse({{ pdb_interface|tojson }}), JSON.parse({{ eclair_interface|tojson }}), JSON.parse({{ pfam_table|tojson }}), JSON.parse({{ phos_table|tojson }}), JSON.parse({{ insider_table|tojson }}), JSON.parse({{ cons_pos|tojson }}), {{ prot_len }});
+			
+      function draw(prot_name, pdbpos, eclairpos, data1, data2, data3, data4, len_prot){
+      
+        var length = len_prot; //hot-encoded length of all proteins for the purposes here to be length 756 aa
+		    var paddingLR = 200;
+		    var paddingTB = 250;//500;
+			var height =  2000;
+			var domainColor = ["grey"];
+		    //var prot_name = prot_name;
+		    //var domainColor = ["red", "green", "#990000","orange", "black", "teal", "lime","yellow","purple","blue"];
+		    // calculate bar width in pixels relative to browser width
+		    var barWidth = $( "#chart" ).width() - (paddingLR+100);
+		
+		    d3.selection.prototype.moveToFront = function() {
+			    return this.each(function(){
+			    this.parentNode.appendChild(this);
+			    });
+		    };
+
+		    // create svg	 
+		    svg = d3.select("#chart").append("svg")
+		    .style("width", "100%")
+		    .attr("height", height + "px")
+		    .attr("id", "first_svg");
+		    //.attr("viewBox","0 0  1140 200");
+
+
+        // filters go in defs element
+        var defs = svg.append("defs");
+
+        // create filter with id #drop-shadow
+        // height=130% so that the shadow is not clipped
+        var filter = defs.append("filter")
+        .attr("id", "drop-shadow")
+        .attr("height", "130%");
+
+        // SourceAlpha refers to opacity of graphic that this filter will be applied to
+        // convolve that with a Gaussian with standard deviation 3 and store result
+        // in blur
+        filter.append("feGaussianBlur")
+        .attr("in", "SourceAlpha")
+        .attr("stdDeviation", 3)
+        .attr("result", "blur");
+
+        // translate output of Gaussian blur to the right and downwards with 2px
+        // store result in offsetBlur
+        filter.append("feOffset")
+        .attr("in", "blur")
+        .attr("dx", 2)
+        .attr("dy", 2)
+        .attr("result", "offsetBlur");
+
+        // overlay original SourceGraphic over translated blurred opacity by using
+        // feMerge filter. Order of specifying inputs is important!
+        var feMerge = filter.append("feMerge");
+
+        feMerge.append("feMergeNode")
+        .attr("in", "offsetBlur")
+        feMerge.append("feMergeNode")
+        .attr("in", "SourceGraphic");
+        // FILTERS IGNORED TILL HERE
+		
+		var ProtLabel = svg.selectAll("text.prot")
+		.data(prot_name)
+		.enter().append("text")
+		.attr("id", function(d){return "labelprot";})	
+		.attr("class", function(d){
+        	return "labelprot"
+		})		
+		.attr("x", function(d){
+			return paddingLR-80;	
+		})
+		.attr("y", function(d){
+			return paddingTB+30;
+		})
+		.style("font-size", 50 +"px")
+		.style("font-family", "Arial")
+		.text(function(d){
+			return prot_name;})
+		.style("text-anchor", "middle")
+		.attr("fill", function(d){
+			return "#808080";
+		});
+
+    	//create protein bar below the number line
+		var bar = svg.selectAll("rect.protein")
+		.data([1])
+		.enter().append("rect")
+		.attr("x", paddingLR)
+		.attr("y", paddingTB) 
+		.attr('rx', 10)
+		.attr('ry', 10)
+		.attr("vector-effect","non-scaling-stroke") //non scaling effect is so that any stroke size will not change dimensionally (thicker in front etc)
+		.style("fill", "#eee")
+		.attr("width", barWidth)
+		.attr("height","20")
+		.style("fill-opacity", ".2")
+		.style("filter", "url(#drop-shadow)")
+    
+		//create protein domains
+		
+		var domExist = []; //array to store unique domains of each protein
+		var colcnt; //color counter for the domainColor array
+		
+		var alldomains = svg.append("g")							
+					.attr("class","domains")
+    
+    var domain = alldomains.selectAll("rect.domain")
+		.data(data1)
+		.enter()
+    .append("a")
+      .attr("xlink:href", function(d) {return "https://pfam.xfam.org/family/"+d.pfam;})
+      .attr("target", "_blank")
+			.attr("title", function(d){
+				var info = d.ID+"["+d.pfam+"] "+d.Name;
+				return info;})
+			.attr("class", "domains")
+			.attr("id", function(d,i){return "dom"+i;})	
+			.attr("data-toggle","tooltip")
+			.attr("data-trigger","hover")
+			.attr("data-placement", "top")	
+		.append("rect")	
+		.attr('rx', 5)
+		.attr('ry', 5)
+		.attr("x", function(d){return (d.start*barWidth/length)+paddingLR;})
+		.attr("y", paddingTB-10) 
+		.style("fill", function(d,i) {  //fill same domains with the same color
+      	
+			var flag=0;
+			
+			if (i===0) //add the first domain in the domExist array
+			{
+				domExist[i] = d.pfam;
+				colcnt = i;
+			}
+			else
+			{
+				for (var j=0; j<domExist.length; j++) //check if the next domains already exist
+				{
+					if (domExist[j] === d.pfam)
+					{											
+						flag=1; //if they exist raise the flag
+						colcnt=j; //get the same color as the existing domain						
+						break;
+					}					
+				}
+				
+				if (flag === 0) //if the domain appears for the first time
+				{
+					domExist.push(d.pfam); //add it to the domExist array
+					colcnt = domExist.length-1; //get a new color for the just added domain
+				}				
+			}
+			
+			return domainColor[colcnt];}) //return the right color
+		.attr("width", function(d){return ((d.stop - d.start)*barWidth/length);})
+		.style("fill-opacity", ".1")
+		.style("stroke-width","2")
+		.style("stroke-opacity","0.5")
+		.attr("height","40")
+		
+
+		d3.selectAll("svg a").sort(function (a, b) { 
+      				if (a.width > b.width) return -1;
+      				else return 1;                   
+
+ 		 			});
+
+		domain.on("mouseover",function(d){
+			var sel = d3.select(this);
+			sel.style("stroke","black");
+		});
+		
+		domain.on("mouseout",function(){
+			var sel = d3.select(this);
+			sel.style({stroke:"none"});
+		});
+		
+		//create domains' labels
+		var domainLabels = svg.selectAll("text.domain")
+		.data(data1)
+		.enter().append("text")
+		.attr("id", function(d,i){return "labelDom"+i;})		
+		.attr("x", function(d){
+			return ((d.start/2 + d.stop/2)*barWidth/length)+paddingLR;			
+		})
+		.attr("y", paddingTB-15)
+		.style("font-size", 12 +"px")
+		.style("font-family", "Arial")
+		.style("text-anchor", "middle")
+
+		//arrays to hold x & y values for ptm labels in order to position them dynamically
+		var xPos = [];
+		var yPos = [];
+		
+		var axisScale = d3.scale.linear()
+		.domain([0,length]) //number line as big as the protein length
+		.range([paddingLR,barWidth+paddingLR]);
+		
+		var xAxis = d3.svg.axis() //(initialize) building the number line here
+		.scale(axisScale)
+
+    var xAxisGroup = svg.append("g")					//built the initialized line		
+		.attr("class","axis")
+		.attr("transform", "translate(0," + (paddingTB+25) + ")") // moves the number line up or down
+    .call(xAxis);
+	
+
+	//////////////////////////////////////////////////////////////////
+    //THIS WILL BE RESIDUE BAR STUFF
+    
+    // create vertical lines for residues
+    var ResLines = svg.selectAll("line.insider")
+		.data(data3)
+		.enter().append("line")
+		.attr("id", function(d,i){return "line2" + i;})
+		.attr("class", function(d){
+        return "lines2"
+			})					
+		.attr("x1", function(d){
+			return (d.P1_IRES*barWidth/length)+paddingLR;
+		})
+		.attr("y1", paddingTB) //+maxY
+		.attr("x2", function(d){
+			return (d.P1_IRES*barWidth/length)+paddingLR;
+		})
+		.attr("y2", paddingTB+20) //+maxY
+		.attr("vector-effect","non-scaling-stroke")
+		.attr("stroke", function(d){
+			return "#808080";
+		});
+    var maxYres=paddingTB+10+5;
+    var secondLine = firstLine;
+	
+	
+	//////////////////////////////////////////////////////////////////////////
+	// create vertical lines for phospho sites
+    var Lines = svg.selectAll("line.ptms")
+		.data(data2)
+		.enter().append("line")
+		.attr("id", function(d,i){return "line" + i;})
+		.attr("class", function(d){
+				if (d.Mod === "phos")
+					{return "phoslines lines " + d.SpectralCount}
+				if (d.Mod === "insider")
+					{return "insider lines " + d.SpectralCount}
+				if (d.Mod == "proximal")
+					{return "proximal labels " + d.SpectralCount}
+			})		
+		.attr("x1", function(d){
+			//d.Pos++;
+			return (d.Pos*barWidth/length)+paddingLR;})
+		.attr("y1", paddingTB)
+		.attr("x2", function(d){return (d.Pos*barWidth/length)+paddingLR;})
+		.attr("y2", paddingTB+20)
+		.attr("vector-effect","non-scaling-stroke")
+		.attr("stroke", function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	
+		var maxY=0;
+		var firstLine = 0;
+	  
+		// create labels for phospho sites
+		var Labels = svg.selectAll("text.ptms")
+		.data(data2)
+		.enter().append("text")
+		.attr("id", function(d,i){return "label"+i;})	
+		.attr("class", function(d){
+				if (d.Mod === "phos")
+					{return "phoslabels labels " + d.SpectralCount}
+				if (d.Mod === "insider")
+					{return "insider labels " + d.SpectralCount}
+				if (d.Mod == "proximal")
+					{return "proximal labels " + d.SpectralCount}
+			})
+		//added stuff
+		.attr("title", function(d){
+			var info = d.Pos + " ["+d.SpectralCount+"]";
+			return info;})
+		.attr("data-toggle","tooltip")
+		.attr("data-trigger","hover")
+		.attr("data-placement", "top")
+		//finished add		
+		.attr("x", function(d,i){
+			
+			xPos[i] = ((d.Pos)*barWidth/length)+paddingLR;
+
+			return xPos[i];
+			
+		})
+		.attr("y", function(d,i){
+			if (i==0 || (xPos[i] - xPos[i-1] > 60 && i>0) || (xPos[i-1]-xPos[firstLine]>80))
+			{
+				yPos[i] = paddingTB-10;
+				firstLine = i;
+			}				
+			else
+			{
+				yPos[i] = yPos[i-1]-15;
+			}
+
+			if (yPos[i]>maxY)
+			{
+				maxY = yPos[i];
+			}
+				
+			return yPos[i];
+		})
+		.style("font-size", 12 +"px")
+		.style("font-family", "Arial")
+		.text(function(d){
+			//var position = d.Pos - 1;
+			return d.AA+d.Pos;})
+		.style("text-anchor", "middle")
+		.attr("fill", function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+
+
+    //////////////////////////////////////////////////////////////////
+    //THIS WAS ALL PROTEIN BAR ABOVE
+    //THIS WILL BE PROTEIN SPECIFIC INTERFACE STUFF
+	// PDB SPECIFIC
+
+	//TITLE OF PDB RESIDUES
+	var title_label = "Interaction with: (PDB structure available)";
+	var PDBLabel = svg.selectAll("text.pdblabel")
+		.data(title_label)
+		.enter().append("text")
+		.attr("id", function(d){return "pdblabel";})	
+		.attr("class", function(d){
+        	return "pdblabel"
+		})		
+		.attr("x", function(d){
+			return paddingLR-80;	
+		})
+		.attr("y", function(d){
+			return paddingTB+60;
+		})
+		.style("font-size", 10 +"px")
+		.style("font-family", "Arial")
+		.text(function(d){
+			return title_label;})
+		.style("text-anchor", "middle")
+		.attr("fill", function(d){
+			return "#808080";
+		});
+
+	var spacing = paddingTB+50;
+	//for loop first for each protein, marker for space add on after each line entry
+	for (j=0; j<pdbpos.length; j++) {
+		var prot = pdbpos[j]["gene_name"];
+		var pos_list = pdbpos[j]["pos_list"];
+		spacing = spacing + 20;
+		//Add protein name label along list of residues
+		var PdbProt = svg.selectAll("text.pdb")
+			.data(pdbpos)
+			.enter().append("text")
+			.attr("id", function(d,i){return "pdblabel"+i;})	
+			.attr("class", function(d){
+			return "pdblabel"
+				})
+			.attr("x", function(d){
+				return paddingLR-50;//(pos_list[0]*barWidth/length)+paddingLR-100;
+			})
+			.attr("y", function(d){
+				return spacing+30;
+			})
+			.style("font-size", 15 +"px")
+			.style("font-family", "Arial")
+			.text(function(d){
+				return prot;})
+			.style("text-anchor", "middle")
+			.attr("fill", function(d){
+				return "#000000";
+			});
+		
+		//for loop second for each position creater line
+		for (i = 0; i< pos_list.length; i++) {
+			
+			var PdbMarks = svg.selectAll("line.pdb")
+				.data(pos_list)
+				.enter().append("line")
+				.attr("id", function(d,i){return "pdbline" + i;})
+				.attr("class", function(d){
+        			return "pdbline"
+				})
+				.attr("x1", function(d){
+					return (pos_list[i]*barWidth/length)+paddingLR;
+				})
+				.attr("y1", spacing+20) //+maxY //j*20 is to set the difference between different proteins
+				.attr("x2", function(d){
+					return (pos_list[i]*barWidth/length)+paddingLR;
+				})
+				.attr("y2", spacing+30) //+maxY
+				.attr("vector-effect","non-scaling-stroke")
+				.attr("stroke", function(d){
+					return "#000000";
+				});
+		}
+	}
+
+	spacing = spacing +20;
+	//ECLAIR SPECIFIC
+
+	//TITLE OF ECLAIR RESIDUES
+	var title_label2 = "Interaction with: (Predicted from Eclair)";
+	var EclairLabel = svg.selectAll("text.eclairlabel")
+		.data(title_label2)
+		.enter().append("text")
+		.attr("id", function(d){return "eclairlabel";})	
+		.attr("class", function(d){
+        	return "eclairlabel"
+		})		
+		.attr("x", function(d){
+			return paddingLR-80;	
+		})
+		.attr("y", function(d){
+			return spacing+45;
+		})
+		.style("font-size", 10 +"px")
+		.style("font-family", "Arial")
+		.text(function(d){
+			return title_label2;})
+		.style("text-anchor", "middle")
+		.attr("fill", function(d){
+			return "#808080";
+		});
+
+	spacing = spacing +20;
+	//for loop first for each protein, marker for space add on after each line entry
+	for (j=0; j<eclairpos.length; j++) {
+		var prot = eclairpos[j]["gene_name"];
+		var pos_list = eclairpos[j]["pos_list"];
+		spacing = spacing + 20;
+		//Add protein name label along list of residues
+		var EclairProt = svg.selectAll("text.eclair")
+			.data(eclairpos)
+			.enter().append("text")
+			.attr("id", function(d,i){return "eclairlabel"+i;})	
+			.attr("class", function(d){
+			return "eclairlabel"
+				})
+			.attr("x", function(d){
+				return paddingLR-50;//(pos_list[0]*barWidth/length)+paddingLR-100;
+			})
+			.attr("y", function(d){
+				return spacing+30;
+			})
+			.style("font-size", 15 +"px")
+			.style("font-family", "Arial")
+			.text(function(d){
+				return prot;})
+			.style("text-anchor", "middle")
+			.attr("fill", function(d){
+				return "#000000";
+			});
+		
+		//for loop second for each position creater line
+		for (i = 0; i< pos_list.length; i++) {
+			
+			var EclairMarks = svg.selectAll("line.eclair")
+				.data(pos_list)
+				.enter().append("line")
+				.attr("id", function(d,i){return "eclairline" + i;})
+				.attr("class", function(d){
+        			return "eclairline"
+				})
+				.attr("x1", function(d){
+					return (pos_list[i]*barWidth/length)+paddingLR;
+				})
+				.attr("y1", spacing+20) //+maxY //j*20 is to set the difference between different proteins
+				.attr("x2", function(d){
+					return (pos_list[i]*barWidth/length)+paddingLR;
+				})
+				.attr("y2", spacing+30) //+maxY
+				.attr("vector-effect","non-scaling-stroke")
+				.attr("stroke", function(d){
+					return "#000000";
+				});
+		}
+	}
+//THIS WAS ALL PROTEIN SPECIFIC INTERFACE ABOVE 
+//////////////////////////////////////////////////////////////////
+
+	$( ".labels" ).on("mouseover",function() {
+		var origin = "#"+this.id;
+		var last = origin.slice(6);
+		var target = "#line"+last;
+		var label = "#label"+last;
+
+	$ ( ".lines" ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	$( target ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	$( target ).attr("y1", paddingTB-20);
+	$( target ).attr("y2", paddingTB+20);
+	$( label ).css("stroke","#000066");
+	$( label ).css("text-decoration","underline");
+
+	});
+	
+	$( ".labels" ).on("mouseout",function() {
+		var origin = "#"+this.id;
+		var last = origin.slice(6);
+		var target = "#line"+last;
+		var label = "#label"+last;
+	$ ( ".lines" ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	$( target ).attr("y1", paddingTB);
+	$( target ).attr("y2", paddingTB+20);
+	//$( target ).css("stroke","#FF8C00");
+	$( label ).css("stroke","none");
+	$( label).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	$( label ).css("text-decoration","none");
+	});
+	
+	
+	$( "#footer" ).on("click",function() {
+		$ ( ".lines" ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+		$ ( ".lines" ).attr("y1", paddingTB);
+		$ ( ".labels" ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+		$ ( ".labels" ).css("stroke","none");
+		$ ( ".labels" ).css("text-decoration","none");
+	});	
+	
+	$( ".trs" ).on("click",function() {
+		var or = "#"+this.id;
+		var lastnum = or.slice(3);
+		var targ = "#line"+lastnum;
+		var tr = "#tr"+lastnum;
+		var lab = "#label"+lastnum;
+	
+	$ ( ".lines" ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	$ ( ".lines" ).attr("y1", paddingTB);
+	$ ( ".labels" ).css("fill",function(d){
+			if (d.Mod == "phos")
+				{return "#FF8C00"}
+			if (d.Mod == "insider")
+				{return "red"}
+			if (d.Mod == "proximal")
+				{return "#FF69B4"}
+		});
+	$ ( ".labels" ).css("stroke","none");
+	$ ( ".labels" ).css("text-decoration","none");
+	$( targ ).css("stroke","#000066");
+	$( targ ).attr("y1", paddingTB-20);
+	$( targ ).attr("y2", paddingTB+20);
+	$( lab ).css("stroke","#000066");
+	//////////////////////////////////////////////////////////////////////
+	///BLOCK ABOVE IS FOR PHOS LINE TOOLTIP
+	/////////////////////////////////////////////////////////////////////
+	var target = "#chart";
+    $('html, body').animate({
+        scrollTop: $(target).offset().top - 100
+    }, 500);
+	
+	});
+	
+	
+	
+	//code necessary for displaying tooltips inside svg chart
+	$( ".domains" ).tooltip({	
+    'container': 'body',	
+    'placement': 'top'
+	}); 
+
+	$( ".labels" ).tooltip({	
+    'container': 'body',	
+    'placement': 'top'
+	});
+
+	$( ".labels2" ).tooltip({	
+    'container': 'body',	
+    'placement': 'top'
+	}); 
+
+	var height = spacing+50;//maxYres+maxY;
+	//alert(maxY);
+	//alert(maxYres);
+	//alert(height);
+	 svg.style("height", height + "px") 
+		.style("width", "100%")
+		
+		
+		.attr("viewBox","0 0  1140 " + height);
+
+  }
+
+    
+      </script>
+      </div>
+			<script type="text/javascript">
+				$(function(){
+					//$('[data-toggle="tooltip"]').tooltip();
+					jQuery('.tooltips').tooltip();
+				});
+
+			</script>
+	
+	  <button class="collapsible">Open Protein Phosphosite information</button>
+      <div class="content" id="phostableGoesHere"></div>
+			
+			<br>
+			<button class="collapsible"> Open Insider Residue information</button>
+			<div class="content" id="insidertableGoesHere"></div>
+			<script type=text/javascript>
+						
+				function json2table(json, classes) {
+					var cols = Object.keys(json[0]);
+					
+					var headerRow = '';
+					var bodyRows = '';
+					
+					classes = classes || '';
+				
+					function capitalizeFirstLetter(string) {
+						return string.charAt(0).toUpperCase() + string.slice(1);
+					}
+				
+					cols.map(function(col) {
+						headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+					});
+				
+					json.map(function(row) {
+						bodyRows += '<tr>';
+				
+						cols.map(function(colName) {
+							bodyRows += '<td>' + row[colName] + '</td>';
+						})
+				
+						bodyRows += '</tr>';
+					});
+				
+					return '<table class="' +
+								classes +
+								'"><thead><tr>' +
+								headerRow +
+								'</tr></thead><tbody>' +
+								bodyRows +
+								'</tbody></table>';
+				}
+		
+				/* How to use it */
+				var defaultData = JSON.parse({{ phos_table|tojson }});
+				//alert(defaultData)
+				
+				document.getElementById('phostableGoesHere').innerHTML = json2table(defaultData, 'table');
+			
+				var defaultData = JSON.parse({{ insider_table|tojson }});
+				//alert(defaultData)
+				
+				document.getElementById('insidertableGoesHere').innerHTML = json2table(defaultData, 'table');
+			</script>
+			<script>
+			var coll = document.getElementsByClassName("collapsible");
+			var i;
+
+			
+			for (i = 0; i < coll.length; i++) {
+			coll[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				var content = this.nextElementSibling;
+				if (content.style.display === "block") {
+				content.style.display = "none";
+				} else {
+				content.style.display = "block";
+				}
+			});
+			}
+			</script>
+	<br><br><br><br><br><br><br><br><br>
+	<footer>
+		<p><br>©2021 Cornell University<br>
+		For questions and concerns please contact: <a href="mailto:mklanz@cornell.edu">hege@cornell.edu</a></p>
+	</footer>  
+	</body>
+</html>

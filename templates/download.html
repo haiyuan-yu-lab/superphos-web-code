@@ -1,0 +1,252 @@
+<doctype html>
+  <head>
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Protein Phosphorylation Sites Database</title>
+			<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}", type="text/css">
+			<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+      
+  </head>
+  <body>
+		<div class="topnav">
+        <a class="navbar-brand" href="/">
+          <div class="logo-image">
+            <img src="/static/images/superphoslogo.svg">
+          </div>
+        </a>
+				<a class="active" href="/" method="get">Home</a>
+				<a href="download" method="get">Download</a>
+				<a href="#about">About</a>
+		</div>
+		<h2>SUPERPHOS: Phosphorylation Site Database</h2>
+		<div class="container">
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<ul class=flashes>
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+					</ul>
+					{% endif %}
+				{% endwith %}
+				
+				{% from "_formhelpers.html" import render_field %}
+				<form class="form-inline" id="search_box" role="form" method="post">
+          <div class="search-field">
+            <input type="text" name="search" class="round" placeholder="Enter Uniprot ID or Gene Name">
+          </div>
+          <div class="row">
+          
+          <div class="form-group col-sm-4 col-sm-offset-4">
+            <!--<select name="database" id="database" class="round-select">
+              <option value="yeast">Yeast</option>
+            </select>-->
+              {{ render_field(form.select) }}
+          </div>
+          <div class="search-button">
+            <button type="submit" value=Search class="round" style="background-color: #333;color: white;">Search</button>
+          </div>
+        </div>
+        </form>
+          
+          <div class="TT_content">
+    
+            <span class="message"></span>
+            <span class="error"></span>
+        
+        <script type="text/javascript" src="/../static/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/../static/js/bootstrap.min.js"></script>
+        <script src="/../static/js/queue.v1.min.js"></script>
+    <script src="/../static/js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
+    
+        <style>
+
+    .logo-image{
+      width: 46px;
+      height: 46px;
+      border-radius: 10%;
+      overflow: hidden;
+      margin-top: -16px;/**/
+    }
+
+    input[type=text] {
+      width: 600px;
+      -webkit-transition: width 0.4s ease-in-out;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .round {
+        width: 100%;
+        border-radius: 15px;
+        border: 1px #000 solid;
+        padding: 5px 5px 5px 25px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
+    }
+
+    .search-field {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      width: 50%;
+      height: 40px;
+    }
+
+    .search-button {
+      display: block;
+      margin-left: 650px;
+      margin-right: auto;
+      margin-bottom: 1px;
+      position: relative;
+      width: 20%;
+      height: 120px;
+    }
+
+    .search-select {
+      display: block;
+      margin-left: 250px;
+      margin-right: auto;
+      margin-bottom: 1px;
+      position: relative;
+      width: 20%;
+      height: 120px;
+    }
+
+    .round-select {
+        width: 50%;
+        border-radius: 15px;
+        border: 1px #000 solid;
+        padding: 5px 5px 5px 25px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
+    }
+
+    footer {
+      position:relative;
+      margin-top: -150px; 
+      height: 150px;
+      clear:both;
+      bottom:0;/**/
+      text-align: center;
+      padding: 4px;
+      width: 100%;
+      background-color: #333;
+      color: white;
+    }
+
+    .topnav {
+    overflow: hidden;
+    background-color: #333;
+    }
+
+    .topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    /*display:inline-block;*/
+    }
+
+    .topnav a:hover {
+    background-color: #ddd;
+    color: black;
+    }
+
+    .topnav a:navbar-brand {
+    background-color: #333;
+    }
+    
+    .topnav a.active {
+    background-color: #FF8C00;
+    color: white;
+    }
+        .axis text {
+          font: 10px sans-serif;
+        }
+        
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+         } 
+        
+        
+        
+        #filterDIV {
+          margin-top: 60px;
+          height: 100%px;
+        }
+        
+        #filterDIV .form-control {
+          width: 45px;
+          padding: none;
+          margin-left: 20px;
+        }
+        
+        #filterDIV .checkbox-inline {
+          height: 36px;
+          margin-top: 8px;
+        }
+        
+        #inlineCheckbox1, #inlineCheckbox2, #inlineCheckbox3{
+          margin-top: 0px;	
+        }
+        
+        .form-group label{
+          display: inline-block;
+        }
+        
+        /* Style the button that is used to open and close the collapsible content 
+        .collapsible {
+          background-color: #eee;
+          color: #444;
+          cursor: pointer;
+          padding: 18px;
+          width: 100%;
+          border: none;
+          text-align: left;
+          outline: none;
+          font-size: 15px;
+        }*/
+
+        /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+        .active, .collapsible:hover {
+          background-color: #ccc;
+        }
+
+        /*.content {
+          padding: 0 18px;
+          background-color: white;
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.2s ease-out;
+        }*/
+        </style>
+        
+        <p>Click on the link below to download the data for phosphosites:<p>
+          <a href="../static/yeast_phosphosites_parsed_2_copy.txt" download="yeast_phosphosites.txt">
+            <img src="../static/images/textfile.jpg" alt="phossites" width="104" height="142">
+          </a>
+        <br>
+        <p>Click on the link below to download the data for interfaces:<p></p>
+        <a href="../static/S_cerevisiae_interfacesALL_2_copy.txt" download="yeast_interfaces.txt">
+          <img src="../static/images/textfile.jpg" alt="phossites" width="104" height="142">
+        </a>
+        <br><br><br><br><br><br><br><br><br>
+        
+        </div>
+        
+      </div>
+      <footer>
+        <p><br>©2021 Cornell University<br>
+        For questions and concerns please contact: <a href="mailto:mklanz@cornell.edu">hege@cornell.edu</a></p>
+      </footer>
+    </body>
+</doctype>

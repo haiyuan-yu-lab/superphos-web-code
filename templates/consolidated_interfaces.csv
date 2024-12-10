@@ -1,0 +1,12 @@
+,P1_IRES,Source,gene_name
+9,51,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'MYO2', u'PRP40', u'ESS1', u'SET2']"
+7,112,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'PRP40', u'SET2', u'ESS1', u'MYO2']"
+5,203,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'PRP40', u'SET2', u'MYO2', u'ESS1']"
+1,227,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'PRP40', u'ESS1', u'SET2', u'MYO2']"
+2,230,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'SET2', u'PRP40', u'MYO2', u'ESS1']"
+3,232,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'ESS1', u'PRP40', u'SET2', u'MYO2']"
+4,233,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'PRP40', u'SET2', u'ESS1', u'MYO2']"
+0,272,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'ESS1', u'PRP40', u'SET2', u'MYO2']"
+6,300,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'PRP40', u'SET2', u'MYO2', u'ESS1']"
+8,338,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'ESS1', u'PRP40', u'MYO2', u'SET2']"
+10,349,"[u'ECLAIR', u'ECLAIR', u'ECLAIR', u'ECLAIR']","[u'ESS1', u'MYO2', u'PRP40', u'SET2']"

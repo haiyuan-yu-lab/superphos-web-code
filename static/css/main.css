@@ -1,0 +1,126 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #444;
+  background-color: #FF8C00;
+}
+/*
+ * Formatting the header area
+ */
+header {
+  background-color: #DFB887;
+  height: 35px;
+  width: 100%;
+  opacity: .9;
+  margin-bottom: 10px;
+}
+/*
+ * Centering the body content
+ */
+.container {
+  width: 1200px;
+  margin: 0 auto;
+  background-color: #FF8C00;
+}
+
+h2 {
+  font-size: 3em;
+  margin-top: 40px;
+  text-align: center;
+  letter-spacing: -2px;
+}
+
+h3 {
+  font-size: 2em;
+  margin-top: 40px;
+  text-align: center;
+  letter-spacing: -2px;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.logo-image{
+  width: 46px;
+  height: 46px;
+  border-radius: 10%;
+  overflow: hidden;
+  margin-top: -36px;/**/
+}
+
+.flashes{
+  color:#ddd;
+  text-align: center;
+}
+
+.topnav {
+overflow: hidden;
+background-color: #333;
+}
+
+.topnav a {
+float: left;
+color: #f2f2f2;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+font-size: 17px;
+/*display:inline-block;*/
+}
+
+.topnav a:hover {
+background-color: #ddd;
+color: black;
+}
+
+.topnav a:navbar-brand {
+background-color: #333;
+}
+
+.topnav a.active {
+background-color: #FF8C00;
+color: white;
+}
+    .axis text {
+      font: 10px sans-serif;
+    }
+    
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+     } 
+    
+    
+    
+    #filterDIV {
+      margin-top: 60px;
+      height: 100%px;
+    }
+    
+    #filterDIV .form-control {
+      width: 45px;
+      padding: none;
+      margin-left: 20px;
+    }
+    
+    #filterDIV .checkbox-inline {
+      height: 36px;
+      margin-top: 8px;
+    }
+    
+    #inlineCheckbox1, #inlineCheckbox2, #inlineCheckbox3{
+      margin-top: 0px;	
+    }
+    
+    .form-group label{
+      display: inline-block;
+      color:#ddd;
+    }
+    
+
